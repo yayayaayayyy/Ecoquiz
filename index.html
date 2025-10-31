@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>생태·환경 퀴즈 — 모던 스타일</title>
+<style>
+  :root{
+    --bg1: linear-gradient(135deg,#0f1724 0%, #0b3a2e 50%, #04274a 100%);
+    --card: rgba(255,255,255,0.06);
+    --glass: rgba(255,255,255,0.05);
+    --accent: #7be495;
+    --accent-2: #7cc7ff;
+    --muted: rgba(255,255,255,0.65);
+    --danger: #ff8a80;
+    --radius: 14px;
+    --glass-border: rgba(255,255,255,0.06);
+    --shadow: 0 8px 30px rgba(2,6,23,0.6);
+    font-family: Inter, "Segoe UI", Roboto, "Noto Sans KR", system-ui, -apple-system, "Helvetica Neue", Arial;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg1);
+    color: #e9f5ef;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+
+  /* Stage: full-viewport centered container */
+  .app{
+    width:100%;
+    max-width:1100px;
+    height:calc(100vh - 56px);
+    min-height:640px;
+    border-radius:20px;
+    background:
+      radial-gradient(800px 200px at 10% 10%, rgba(123,228,149,0.075), transparent 10%),
+      radial-gradient(600px 200px at 90% 80%, rgba(124,199,255,0.04), transparent 10%),
+      linear-gradient(180deg, rgba(255,255,255,0.02), transparent 40%),
+      var(--card);
+    border:1px solid var(--glass-border);
+    box-shadow:var(--shadow);
+    padding:28px;
+    display:grid;
+    grid-template-rows: auto 1fr auto;
+    gap:18px;
+    overflow:hidden;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .logo__mark{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    color:#05232b;
+    box-shadow:0 6px 18px rgba(7,14,20,0.35), inset 0 -6px 14px rgba(255,255,255,0.08);
+  }
+  .logo__title{
+    font-size:18px;
+    line-height:1;
+  }
+  .meta{
+    margin-left:auto;
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+
+  .progress-wrap{
+    width:260px;
+    background:rgba(255,255,255,0.03);
+    border-radius:999px;
+    height:12px;
+    padding:3px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .progress{
+    height:100%;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    border-radius:999px;
+    width:0%;
+    transition:width .45s cubic-bezier(.2,.9,.25,1);
+  }
+  .progress-text{font-size:13px;color:var(--muted);min-width:60px;text-align:right}
+
+  /* main question area */
+  .stage{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+
+  .card{
+    width:100%;
+    height:100%;
+    border-radius:12px;
+    padding:36px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 12px 40px rgba(2,6,23,0.55);
+    overflow:hidden;
+  }
+
+  .q-top{display:flex;align-items:center;gap:18px}
+  .q-index{
+    min-width:76px;
+    height:76px;
+    border-radius:14px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;
+    font-size:20px;
+    color:var(--accent);
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 6px 18px rgba(2,6,23,0.5);
+  }
+  .q-title{
+    font-size:22px;
+    font-weight:600;
+    color:#f6fff8;
+    line-height:1.2;
+  }
+  .q-sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+  .choices{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+    margin-top:6px;
+    align-content:start;
+  }
+
+  .choice{
+    padding:18px;
+    border-radius:12px;
+    background:var(--glass);
+    border:1px solid rgba(255,255,255,0.03);
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    user-select:none;
+    font-size:15px;
+    color:#eafff3;
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    min-height:72px;
+  }
+  .choice:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(2,6,23,0.6) }
+  .choice .letter{
+    min-width:42px;
+    height:42px;
+    border-radius:9px;
+    background:rgba(0,0,0,0.22);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    color:var(--accent);
+    font-size:15px;
+  }
+  .choice .txt{flex:1;color: #e9fbe9}
+
+  .choice.selected{
+    outline:2px solid rgba(123,228,149,0.16);
+    background:linear-gradient(90deg, rgba(123,228,149,0.06), rgba(124,199,255,0.03));
+    transform:translateY(-4px);
+  }
+  .choice.correct{
+    background:linear-gradient(90deg, rgba(123,228,149,0.14), rgba(123,228,149,0.06));
+    border:1px solid rgba(123,228,149,0.14);
+    color:#0b2f26;
+  }
+  .choice.wrong{
+    background:linear-gradient(90deg, rgba(255,138,128,0.09), rgba(255,138,128,0.04));
+    border:1px solid rgba(255,138,128,0.12);
+  }
+
+  /* Footer controls */
+  footer{display:flex;align-items:center;gap:12px}
+  .btn{
+    border:0;
+    padding:10px 16px;
+    border-radius:10px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:#05232b;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow: 0 8px 26px rgba(7,14,20,0.35);
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:hover{ transform:translateY(-4px) }
+  .btn.ghost{ background:transparent; color:var(--muted); box-shadow:none; border:1px solid rgba(255,255,255,0.03) }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; transform:none }
+
+  .pager{display:flex;gap:8px; align-items:center}
+  .tag{font-size:13px;color:var(--muted)}
+
+  /* result screen */
+  .result{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    text-align:center;
+    padding:20px;
+  }
+  .result .score{
+    font-size:48px;
+    font-weight:800;
+    color:var(--accent);
+  }
+  .result .detail{color:var(--muted);max-width:680px}
+
+  /* explanations list */
+  .explain-list{
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+  }
+  .explain-item{
+    padding:12px 14px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);
+    color:var(--muted);font-size:14px;
+  }
+
+  /* small screens */
+  @media (max-width:880px){
+    .choices{grid-template-columns:1fr; padding-bottom:10px}
+    .app{padding:18px; height:calc(100vh - 36px)}
+    .q-index{min-width:60px;height:60px}
+  }
+
+  /* subtle enter animation */
+  .fade-in{ animation:fadeInUp .5s ease both; }
+  @keyframes fadeInUp{
+    from{opacity:0; transform:translateY(10px)}
+    to{opacity:1; transform:none}
+  }
+</style>
+</head>
+<body>
+  <main class="app" id="app" role="application" aria-roledescription="생태와 환경 퀴즈">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <div class="logo__mark">E</div>
+        <div>
+          <div class="logo__title">EcoQuiz • 생태·환경 퀴즈</div>
+          <div style="font-size:12px;color:var(--muted)">10문제 — 친환경 지식 테스트</div>
+        </div>
+      </div>
+
+      <div class="meta" aria-hidden="true">
+        <div class="progress-wrap" title="진행률">
+          <div class="progress" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">0 / 10</div>
+      </div>
+    </header>
+
+    <section class="stage" id="stage" aria-live="polite">
+      <!-- dynamic content injected here -->
+    </section>
+
+    <footer>
+      <div class="pager">
+        <button class="btn ghost" id="prevBtn" aria-label="이전 문제" disabled>&larr; 이전</button>
+        <button class="btn ghost" id="nextBtn" aria-label="다음 문제" disabled>다음 &rarr;</button>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px; align-items:center">
+        <div class="tag">키보드: ← → 선택</div>
+        <button class="btn" id="quitBtn">처음으로</button>
+      </div>
+    </footer>
+  </main>
+
+<script>
+/*
+  EcoQuiz - single-file quiz app
+  - 10 questions (한국어)
+  - full-screen card per question
+  - 선택지를 클릭하면 선택 표시
+  - '다음' 클릭 시 정답 확인 + 다음 문제로 이동
+  - 마지막에 점수 및 해설 표시
+*/
+
+const QUESTIONS = [
+  {
+    q: "온실가스 중 특히 이산화탄소(CO₂)가 문제가 되는 이유는 무엇인가요?",
+    choices: ["오존층을 직접 파괴해서", "대기 중에 오래 머물러 온실효과를 강하게 만듦", "바로 독성을 내뿜어서", "수분을 흡수해 구름을 만든다"],
+    answer: 1,
+    explain: "이산화탄소는 대기 중에 오랫동안 남아 지구의 복사 평형을 바꿔 온실효과를 강화합니다. 이는 기후변화의 주요 원인 중 하나입니다."
+  },
+  {
+    q: "생물다양성(Biodiversity)의 감소가 인류에 미치는 영향으로 옳지 않은 것은?",
+    choices: ["식량 안전성 저하", "질병 조절 능력 감소", "생태계 서비스 안정화", "생태계 회복력 감소"],
+    answer: 2,
+    explain: "생물다양성 감소는 생태계 서비스를 불안정하게 하고, 회복력과 질병 조절 능력을 떨어뜨리며 식량 안전에 악영향을 줍니다. '안정화'는 옳지 않습니다."
+  },
+  {
+    q: "비점오염(non-point source pollution)이란 무엇을 가리키나요?",
+    choices: ["공장 굴뚝에서 배출되는 오염물질", "도시와 농경지에서 넓게 퍼져 특정 지점으로 모이지 않는 오염", "해저에서 자연적으로 나오는 오염물", "정수장에서 나오는 오염수"],
+    answer: 1,
+    explain: "비점오염은 특정 배출 지점이 아닌, 농지·도로·도시 지역 등에서 여러 곳으로부터 흘러들어오는 오염을 말합니다."
+  },
+  {
+    q: "멸종위기종을 보호할 때 가장 먼저 고려해야 할 것은?",
+    choices: ["관광 자원화", "서식지 보전 및 복원", "유전자 편집", "단순히 수를 늘리기 위한 포획 번식"],
+    answer: 1,
+    explain: "서식지 보전은 종 보존의 기본입니다. 서식지가 없으면 개체수 증가는 지속 불가능합니다."
+  },
+  {
+    q: "지속가능한 산림 관리에서 중요한 원칙은?",
+    choices: ["무분별한 벌목", "다양한 수종과 연속성 유지", "단일 수종으로 최대 수확", "산림을 개발 지역으로 전환"],
+    answer: 1,
+    explain: "다양한 수종과 생태계의 연속성 유지가 산림의 지속가능성을 보장합니다."
+  },
+  {
+    q: "플라스틱 쓰레기가 해양으로 유입되었을 때 가장 큰 문제 중 하나는?",
+    choices: ["해수면 온도 즉시 상승", "해양생물의 섭식·기계적 상해와 미세플라스틱 형성", "바닷물의 pH를 즉시 낮춤", "해양에서 전기 발생이 멈춤"],
+    answer: 1,
+    explain: "플라스틱은 해양생물의 섭식이나 얽힘을 유발하고, 분해되어 미세플라스틱으로 축적되어 먹이사슬을 통해 문제를 키웁니다."
+  },
+  {
+    q: "탄소 중립(Carbon Neutral) 목표는 무엇을 의미하나요?",
+    choices: ["모든 화석연료를 즉시 사용 중지", "배출한 온실가스를 다른 방식으로 상쇄하여 순배출을 0으로 만드는 것", "이산화탄소만 줄이면 됨", "나무만 심으면 달성 가능"],
+    answer: 1,
+    explain: "탄소 중립은 배출량을 줄이는 한편, 잔여 배출을 흡수하거나 상쇄하여 순배출(net zero)을 만드는 전략입니다."
+  },
+  {
+    q: "도시의 '열섬현상(urban heat island)'을 완화하는 방법으로 적절하지 않은 것은?",
+    choices: ["녹지 확대 및 옥상녹화", "반사율 높은 포장재 사용", "도시 숲과 물공간 조성", "도시 내 콘크리트 면적을 늘리기"],
+    answer: 3,
+    explain: "콘크리트 면적을 늘리면 열축적이 커져 열섬을 악화시킵니다. 나머지 방법들은 완화책입니다."
+  },
+  {
+    q: "지하수 과잉채취(over-extraction)가 초래할 수 있는 문제는?",
+    choices: ["지하수 고갈 및 지반 침하", "대기 중 산소 농도 증가", "바람의 세기 감소", "태양 복사량 증가"],
+    answer: 0,
+    explain: "과도한 지하수 추출은 지하수 고갈과 함께 지반침하(land subsidence)를 유발할 수 있습니다."
+  },
+  {
+    q: "친환경 농업(유기농 등)의 장점으로 올바른 것을 고르세요.",
+    choices: ["항상 생산량이 더 많다", "농약·화학비료 의존도를 낮춰 토양과 생태계 보전에 기여", "토양을 완전히 비움", "토지 이용 효율 무조건 증가"],
+    answer: 1,
+    explain: "친환경 농업은 화학 투입을 줄여 토양 건강과 주변 생물다양성 유지에 도움이 됩니다. 다만 생산성과 토지 효율은 관리 방식에 따라 달라집니다."
+  }
+];
+
+let state = {
+  idx: 0,
+  answers: Array(QUESTIONS.length).fill(null),
+  revealed: Array(QUESTIONS.length).fill(false),
+  score: 0,
+};
+
+const stage = document.getElementById('stage');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const quitBtn = document.getElementById('quitBtn');
+
+function render(){
+  const i = state.idx;
+  updateProgress();
+  if (i >= QUESTIONS.length){
+    renderResult();
+    return;
+  }
+
+  const Q = QUESTIONS[i];
+
+  stage.innerHTML = '';
+  const card = document.createElement('section');
+  card.className = 'card fade-in';
+  card.setAttribute('role','group');
+  card.setAttribute('aria-label', `문제 ${i+1}`);
+
+  // top
+  const top = document.createElement('div');
+  top.className = 'q-top';
+  top.innerHTML = `
+    <div class="q-index">${String(i+1).padStart(2,'0')}</div>
+    <div style="flex:1">
+      <div class="q-title">${escapeHtml(Q.q)}</div>
+      <div class="q-sub">문항 ${i+1} / ${QUESTIONS.length}</div>
+    </div>
+  `;
+  card.appendChild(top);
+
+  // choices grid
+  const choicesWrap = document.createElement('div');
+  choicesWrap.className = 'choices';
+  Q.choices.forEach((c, idx)=>{
+    const ch = document.createElement('button');
+    ch.className = 'choice';
+    ch.type = 'button';
+    ch.innerHTML = `<div class="letter">${String.fromCharCode(65+idx)}</div><div class="txt">${escapeHtml(c)}</div>`;
+    ch.dataset.index = idx;
+    ch.addEventListener('click', ()=> onSelect(idx));
+    // mark selected / revealed
+    if (state.answers[i] !== null && state.answers[i] == idx){
+      ch.classList.add('selected');
+    }
+    if (state.revealed[i]){
+      if (idx === Q.answer) ch.classList.add('correct');
+      else if (state.answers[i] === idx && idx !== Q.answer) ch.classList.add('wrong');
+      else ch.style.opacity = 0.9;
+    }
+    choicesWrap.appendChild(ch);
+  });
+  card.appendChild(choicesWrap);
+
+  // explanation (only show after reveal)
+  if (state.revealed[i]){
+    const exp = document.createElement('div');
+    exp.className = 'explain-list';
+    const item = document.createElement('div');
+    item.className = 'explain-item';
+    item.innerHTML = `<strong>해설:</strong> ${escapeHtml(Q.explain)}`;
+    exp.appendChild(item);
+    card.appendChild(exp);
+  }
+
+  stage.appendChild(card);
+
+  // controls enable/disable
+  prevBtn.disabled = (i === 0);
+  nextBtn.disabled = !(state.answers[i] !== null);
+  nextBtn.textContent = (i === QUESTIONS.length -1) ? '제출하기' : '다음 →';
+
+  // focus management
+  setTimeout(()=> {
+    // focus first selectable choice for keyboard users
+    const first = stage.querySelector('.choice');
+    if (first) first.focus();
+  }, 120);
+}
+
+function onSelect(choiceIdx){
+  const i = state.idx;
+  if (state.revealed[i]) return; // already revealed, ignore changes
+  state.answers[i] = choiceIdx;
+
+  // visually update selections
+  const nodes = stage.querySelectorAll('.choice');
+  nodes.forEach(n => n.classList.remove('selected'));
+  const selectedNode = stage.querySelector(`.choice[data-index="${choiceIdx}"]`);
+  if (selectedNode) selectedNode.classList.add('selected');
+
+  // enable next button
+  nextBtn.disabled = false;
+}
+
+function showRevealThenAdvance(){
+  const i = state.idx;
+  if (state.answers[i] === null) return;
+  state.revealed[i] = true;
+
+  // scoring immediate
+  if (state.answers[i] === QUESTIONS[i].answer){
+    state.score += 1;
+  }
+
+  // re-render to show correct/wrong
+  render();
+
+  // if last question, move to results after short pause else allow user to click '다음' again to move
+  // We'll make the user click '다음' again to continue so they can read explanation.
+  nextBtn.disabled = false;
+  nextBtn.textContent = (i === QUESTIONS.length -1) ? '결과 보기' : '다음 →';
+}
+
+function nextHandler(){
+  const i = state.idx;
+  if (!state.revealed[i]){
+    // reveal current answer first
+    showRevealThenAdvance();
+    return;
+  }
+  // advance
+  state.idx += 1;
+  render();
+}
+
+function prevHandler(){
+  if (state.idx === 0) return;
+  // if previous was revealed and counted, remove its score if previously counted
+  // Simpler approach: recalc score from answers when rendering results; but we already incremented score when revealed.
+  // To avoid double-counting issues, recompute score on demand.
+  state.idx -= 1;
+  render();
+}
+
+function renderResult(){
+  // recompute score accurately
+  let finalScore = 0;
+  QUESTIONS.forEach((q, idx)=>{
+    if (state.answers[idx] === q.answer) finalScore++;
+  });
+  stage.innerHTML = '';
+  const wrap = document.createElement('section');
+  wrap.className = 'card fade-in result';
+  wrap.innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <div style="font-size:13px;color:var(--muted)">완료</div>
+      <div class="score">${finalScore} / ${QUESTIONS.length}</div>
+      <div class="detail">환경 지식 테스트를 완료했습니다. 아래에서 각 문항의 정답과 해설을 확인하세요.</div>
+    </div>
+    <div style="width:100%; margin-top:14px; overflow:auto; max-height:40vh; padding-right:6px">
+      ${QUESTIONS.map((q, idx)=>`
+        <div class="explain-item" style="display:block; margin-bottom:8px">
+          <strong>Q${idx+1}.</strong> ${escapeHtml(q.q)}<br>
+          <strong>정답:</strong> ${String.fromCharCode(65+q.answer)} — ${escapeHtml(q.choices[q.answer])}<br>
+          <small style="color:var(--muted)">${escapeHtml(q.explain)}</small>
+        </div>
+      `).join('')}
+    </div>
+    <div style="display:flex; gap:10px; margin-top:12px">
+      <button class="btn" id="retryBtn">다시 풀기</button>
+      <button class="btn ghost" id="shareBtn">결과 복사</button>
+    </div>
+  `;
+  stage.appendChild(wrap);
+
+  // update footer buttons
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
+  // hook retry / share
+  document.getElementById('retryBtn').addEventListener('click', ()=> {
+    reset();
+    render();
+  });
+  document.getElementById('shareBtn').addEventListener('click', ()=> {
+    const text = `EcoQuiz 결과: ${finalScore}/${QUESTIONS.length}\n친환경 지식을 확인해보세요!`;
+    navigator.clipboard?.writeText(text).then(()=>{
+      alert('결과가 클립보드에 복사되었습니다.');
+    }, ()=> alert(text));
+  });
+}
+
+function updateProgress(){
+  const pct = Math.round((Math.min(state.idx, QUESTIONS.length) / QUESTIONS.length) * 100);
+  progressBar.style.width = pct + '%';
+  progressText.textContent = `${Math.min(state.idx, QUESTIONS.length)} / ${QUESTIONS.length}`;
+}
+
+function reset(){
+  state = {
+    idx: 0,
+    answers: Array(QUESTIONS.length).fill(null),
+    revealed: Array(QUESTIONS.length).fill(false),
+    score: 0,
+  };
+  progressBar.style.width = '0%';
+  progressText.textContent = `0 / ${QUESTIONS.length}`;
+}
+
+// keyboard handling
+document.addEventListener('keydown', (e)=>{
+  if (state.idx >= QUESTIONS.length) return;
+  const choices = stage.querySelectorAll('.choice');
+  if (!choices.length) return;
+
+  // left/right for prev/next
+  if (e.key === 'ArrowLeft'){
+    prevHandler();
+  } else if (e.key === 'ArrowRight'){
+    if (!state.revealed[state.idx]){
+      // if there's a selection, reveal; else do nothing
+      if (state.answers[state.idx] !== null) showRevealThenAdvance();
+    } else {
+      nextHandler();
+    }
+  } else if (/^[1-9]$/.test(e.key)) {
+    // number keys 1-4 map to choices if available
+    const n = Number(e.key) - 1;
+    if (choices[n]) onSelect(Number(choices[n].dataset.index));
+  } else if (['a','A','b','B','c','C','d','D'].includes(e.key)){
+    const letter = e.key.toUpperCase();
+    const idx = letter.charCodeAt(0) - 65;
+    if (choices[idx]) onSelect(idx);
+  } else if (e.key === 'Enter'){
+    // Enter behaves like Next/Reveal
+    const i = state.idx;
+    if (!state.revealed[i] && state.answers[i] !== null){
+      showRevealThenAdvance();
+    } else {
+      nextHandler();
+    }
+  }
+});
+
+// UI button events
+nextBtn.addEventListener('click', nextHandler);
+prevBtn.addEventListener('click', prevHandler);
+quitBtn.addEventListener('click', ()=> {
+  if (!confirm('처음으로 돌아가시겠어요? 현재 진행 중인 답안은 초기화됩니다.')) return;
+  reset();
+  render();
+});
+
+// small helper: escape HTML to prevent injection
+function escapeHtml(str){
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+// initial render
+render();
+</script>
+</body>
+</html>
